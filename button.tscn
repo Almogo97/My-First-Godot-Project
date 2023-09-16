@@ -1,0 +1,44 @@
+[gd_scene load_steps=3 format=3 uid="uid://d0sla6xj0rd2u"]
+
+[ext_resource type="Theme" uid="uid://bwi4bu5xgeswj" path="res://circle-button.tres" id="1_wqxit"]
+[ext_resource type="Script" path="res://Score.gd" id="1_xu8ef"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_vertical = 8
+metadata/_edit_use_anchors_ = true
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 64
+theme_override_constants/margin_top = 256
+theme_override_constants/margin_right = 64
+theme_override_constants/margin_bottom = 128
+
+[node name="Label" type="Label" parent="MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_font_sizes/font_size = 64
+text = "0"
+horizontal_alignment = 1
+script = ExtResource("1_xu8ef")
+
+[node name="ClickButton" type="Button" parent="MarginContainer"]
+custom_minimum_size = Vector2(512, 512)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+theme = ExtResource("1_wqxit")
+text = "Click!"
+
+[connection signal="pressed" from="MarginContainer/ClickButton" to="MarginContainer/Label" method="_on_click_button_pressed"]
