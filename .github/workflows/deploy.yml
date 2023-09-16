@@ -21,7 +21,7 @@ jobs:
       - name: Windows Build
         run: |
           mkdir -v -p build/windows
-          godot -v --export-release "Windows Desktop" ./build/windows/$EXPORT_NAME.exe
+          godot -v --export-release --headless "Windows Desktop" ./build/windows/$EXPORT_NAME.exe
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
@@ -41,7 +41,7 @@ jobs:
       - name: Web Build
         run: |
           mkdir -v -p build/web
-          godot -v --export-release "HTML5" ./build/web/index.html
+          godot -v --export-release --headless "HTML5" ./build/web/index.html
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
