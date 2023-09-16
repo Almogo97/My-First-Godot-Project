@@ -25,7 +25,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           generateReleaseNotes: true
           tag: ${{ github.ref_name }}
-          artifacts: ${{ steps.export.outputs.build_directory }}/Windows/
+          artifacts: ${{ steps.export.outputs.build_directory }}/Windows/Click.exe
       - name: Deploy to GitHub Pages 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
