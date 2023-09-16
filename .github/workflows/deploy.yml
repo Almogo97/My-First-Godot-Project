@@ -4,54 +4,26 @@ on:
     branches:
       - main
 
-env:
-  EXPORT_NAME: ClickTheButton
-
 jobs:
-  export-windows:
-    name: Windows Export
-    runs-on: ubuntu-20.04
-    container:
-      image: barichello/godot-ci:4.1.1
+  export:
+    name: Export
+    runs-on: ubuntu-latest
+    permissions: write-all
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+      - name: Export
+        uses: firebelley/godot-export@v5.2.1
         with:
-          lfs: true
-      - name: Windows Build
-        run: |
-          mkdir -v -p build/windows
-          godot -v --export-release --headless "Windows Desktop" ./build/windows/$EXPORT_NAME.exe
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v1
+          godot_executable_download_url: https://downloads.tuxfamily.org/godotengine/4.0/Godot_v4.0-stable_linux.x86_64.zip
+          godot_export_templates_download_url: https://downloads.tuxfamily.org/godotengine/4.0/Godot_v4.0-stable_export_templates.tpz
+          relative_project_path: ./
+          cache: true
+          archive_output: true
+      - name: Release
+        uses: ncipollo/release-action@v1.12.0
         with:
-          name: windows
-          path: build/windows
-
-  export-web:
-    name: Web Export
-    runs-on: ubuntu-20.04
-    container:
-      image: barichello/godot-ci:4.1.1
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          lfs: true
-      - name: Web Build
-        run: |
-          mkdir -v -p build/web
-          godot -v --export-release --headless "HTML5" ./build/web/index.html
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v1
-        with:
-          name: web
-          path: build/web
-      - name: Install rsync 📚
-        run: |
-          apt-get update && apt-get install -y rsync
-      - name: Deploy to GitHub Pages 🚀
-        uses: JamesIves/github-pages-deploy-action@releases/v4
-        with:
-          branch: gh-pages # The branch the action should deploy to.
-          folder: build/web # The folder the action should deploy.
+          token: ${{ secrets.GITHUB_TOKEN }}
+          generateReleaseNotes: true
+          tag: ${{ github.ref_name }}
+          artifacts: ${{ steps.export.outputs.archive_directory }}/*
