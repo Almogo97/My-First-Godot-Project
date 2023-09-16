@@ -1,9 +1,8 @@
 name: "Deploy"
-on: 
+on:
   push:
-    branches:
-      - main
-
+    tags:
+      - "v*"
 jobs:
   export:
     name: Export
@@ -12,14 +11,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Install wine
+        id: wine_install
+        run: |
+          sudo apt install wine64
+          echo "WINE_PATH=$(which wine64)" >> $GITHUB_OUTPUT
       - name: Export
         uses: firebelley/godot-export@v5.2.1
         with:
-          godot_executable_download_url: https://downloads.tuxfamily.org/godotengine/4.0/Godot_v4.0-stable_linux.x86_64.zip
-          godot_export_templates_download_url: https://downloads.tuxfamily.org/godotengine/4.0/Godot_v4.0-stable_export_templates.tpz
+          godot_executable_download_url: https://downloads.tuxfamily.org/godotengine/4.1.1/Godot_v4.1.1-stable_linux.x86_64.zip
+          godot_export_templates_download_url: https://downloads.tuxfamily.org/godotengine/4.1.1/Godot_v4.1.1-stable_export_templates.tpz
           relative_project_path: ./
-          cache: true
           archive_output: true
+          cache: true
+          wine_path: ${{ steps.wine_install.outputs.WINE_PATH }}
       - name: Release
         uses: ncipollo/release-action@v1.12.0
         with:
