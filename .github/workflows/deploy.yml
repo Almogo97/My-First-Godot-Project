@@ -42,4 +42,4 @@ jobs:
         with:
           files: build/windows/${{env.EXPORT_NAME}}.exe
       - name: Deploy to Itch.io
-        run: butler push build/windows $ITCHIO_USERNAME/$ITCHIO_GAME:windows
+        run: butler push build/windows ${{env.ITCHIO_USERNAME}}/${{env.ITCHIO_GAME}}:windows
