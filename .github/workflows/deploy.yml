@@ -14,7 +14,7 @@ env:
 
 jobs:
   build:
-    name: Build
+    name: Build ${{}}
     runs-on: ubuntu-20.04
     container:
       image: barichello/godot-ci:4.1.1
@@ -25,6 +25,9 @@ jobs:
           - platform: "windows"
             preset: "Windows Desktop"
             executable: "Click.exe"
+          - platform: "web"
+            preset: "Web"
+            executable: "index.html"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -50,6 +53,7 @@ jobs:
 
   deploy-github:
     name: Deploy GitHub
+    needs: build
     runs-on: ubuntu-20.04
     container:
       image: barichello/godot-ci:4.1.1
@@ -67,6 +71,7 @@ jobs:
 
   deploy-itchio:
     name: Deploy Itch.io
+    needs: build
     runs-on: ubuntu-20.04
     container:
       image: barichello/godot-ci:4.1.1
