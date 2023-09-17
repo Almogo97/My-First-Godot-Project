@@ -4,35 +4,26 @@ on:
       tags:
         - "v*"
 
+env:
+  EXPORT_NAME: Click
+
 jobs:
-  export:
-    name: Export
-    runs-on: ubuntu-latest
-    permissions: write-all
+  export-windows:
+    name: Windows Export
+    runs-on: ubuntu-20.04
+    container:
+      image: barichello/godot-ci:4.1.1
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Export
-        id: export
-        uses: firebelley/godot-export@v5.2.1
         with:
-          godot_executable_download_url: https://downloads.tuxfamily.org/godotengine/4.1.1/Godot_v4.1.1-stable_linux.x86_64.zip
-          godot_export_templates_download_url: https://downloads.tuxfamily.org/godotengine/4.1.1/Godot_v4.1.1-stable_export_templates.tpz
-          relative_project_path: ./
-          cache: true
-      - name: Release
-        uses: ncipollo/release-action@v1.12.0
+          lfs: true
+      - name: Build
+        run: |
+          mkdir -v -p build/windows
+          godot -v --export-release --headless "Windows Desktop" ../build/windows/$EXPORT_NAME.exe
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          generateReleaseNotes: true
-          tag: ${{ github.ref_name }}
-          artifacts: ${{ steps.export.outputs.build_directory }}/Windows/Click.exe
-      - run: |
-          cd ${{ steps.export.outputs.build_directory }}/Web
-          curl -fsSL https://github.com/gzuidhof/coi-serviceworker/raw/master/coi-serviceworker.js > coi-serviceworker.js
-          sed -i 's#\(		<script src="index.js"></script>\)#		<script src="coi-serviceworker.js"></script>\n\1#g' index.html
-      - name: Deploy to GitHub Pages 🚀
-        uses: JamesIves/github-pages-deploy-action@releases/v4
-        with:
-          branch: gh-pages # The branch the action should deploy to.
-          folder:  ${{ steps.export.outputs.build_directory }}/Web/
+          name: windows
+          path: build/windows
