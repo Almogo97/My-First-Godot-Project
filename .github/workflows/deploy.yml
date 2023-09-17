@@ -32,7 +32,9 @@ jobs:
           mkdir -v -p build/windows
           godot -v --export-release --headless "Windows Desktop" build/windows/$EXPORT_NAME.exe
       - name: Compress files
-        run: zip -r build/windows.zip build/windows
+        run: |
+          cd build
+          zip -r windows.zip windows
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
@@ -65,7 +67,9 @@ jobs:
           mkdir -v -p build/web
           godot -v --export-release --headless "Web" build/web/index.html
       - name: Compress files
-        run: zip -r build/web.zip build/web
+        run: |
+          cd build
+          zip -r web.zip web
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
