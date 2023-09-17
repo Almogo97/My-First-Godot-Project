@@ -10,6 +10,7 @@ permissions:
 env:
   GODOT_VERSION: 4.1.1
   EXPORT_NAME: Click
+  BUTLER_API_KEY: ${{secrets.BUTLER_API_KEY}}
 
 jobs:
   export-windows:
