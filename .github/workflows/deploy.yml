@@ -10,7 +10,6 @@ permissions:
 env:
   GODOT_VERSION: 4.1.1
   EXPORT_NAME: Click
-  BUTLER_API_KEY: ${{secrets.BUTLER_API_KEY}}
 
 jobs:
   build:
@@ -85,3 +84,5 @@ jobs:
           path: build
       - name: Deploy to Itch.io
         run: butler push build/${{matrix.platform}}.zip ${{vars.ITCHIO_USERNAME}}/${{vars.ITCHIO_GAME}}:${{matrix.platform}}
+        env:
+          BUTLER_API_KEY: ${{secrets.BUTLER_API_KEY}}
