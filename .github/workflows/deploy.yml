@@ -13,11 +13,18 @@ env:
   BUTLER_API_KEY: ${{secrets.BUTLER_API_KEY}}
 
 jobs:
-  export-windows:
-    name: Windows Export
+  build:
+    name: Build
     runs-on: ubuntu-20.04
     container:
       image: barichello/godot-ci:4.1.1
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: "windows"
+            preset: "Windows Desktop"
+            executable: ${{env.EXPORT_NAME}}.exe
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -29,18 +36,28 @@ jobs:
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
       - name: Export
         run: |
-          mkdir -v -p build/windows
-          godot -v --export-release --headless "Windows Desktop" build/windows/$EXPORT_NAME.exe
+          mkdir -v -p build/${{matrix.platform}}
+          godot -v --export-release --headless ${{matrix.preset}} build/${{matrix.platform}}/${{matrix.executable}}
       - name: Compress files
-        run: |
-          cd build
-          zip -r windows.zip windows
+        working-directory: build
+        run: zip -r ${{matrix.platform}}.zip ${{matrix.platform}}
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: windows
-          path: build/windows.zip
+          name: ${{matrix.platform}}
+          path: build/${{matrix.platform}}.zip
           if-no-files-found: error
+
+  deploy-github:
+    name: Deploy GitHub
+    runs-on: ubuntu-20.04
+    container:
+      image: barichello/godot-ci:4.1.1
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: windows
+          path: build
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
@@ -48,33 +65,19 @@ jobs:
       - name: Deploy to Itch.io
         run: butler push build/windows.zip ${{vars.ITCHIO_USERNAME}}/${{vars.ITCHIO_GAME}}:windows
 
-  export-web:
-    name: Web Export
+  deploy-itchio:
+    name: Deploy Itch.io
     runs-on: ubuntu-20.04
     container:
       image: barichello/godot-ci:4.1.1
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ["windows", "web"]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          lfs: true
-      - name: Setup
-        run: |
-          mkdir -v -p ~/.local/share/godot/export_templates
-          mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
-      - name: Export
-        run: |
-          mkdir -v -p build/web
-          godot -v --export-release --headless "Web" build/web/index.html
-      - name: Compress files
-        run: |
-          cd build
-          zip -r web.zip web
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+      - uses: actions/download-artifact@v3
         with:
           name: web
-          path: build/web.zip
-          if-no-files-found: error
+          path: build
       - name: Deploy to Itch.io
-        run: butler push build/web.zip ${{vars.ITCHIO_USERNAME}}/${{vars.ITCHIO_GAME}}:web
+        run: butler push build/${{matrix.platform}}.zip ${{vars.ITCHIO_USERNAME}}/${{vars.ITCHIO_GAME}}:${{matrix.platform}}
