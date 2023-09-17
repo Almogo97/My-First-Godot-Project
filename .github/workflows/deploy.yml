@@ -1,5 +1,9 @@
 name: "Deploy"
-on: push
+on: 
+  push:
+    tags:
+      - "v*"
+    
 
 env:
   GODOT_VERSION: 4.1.1
