@@ -64,8 +64,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: build/windows.zip
-      - name: Deploy to Itch.io
-        run: butler push build/windows.zip ${{vars.ITCHIO_USERNAME}}/${{vars.ITCHIO_GAME}}:windows
 
   deploy-itchio:
     name: Deploy ${{matrix.preset}} to Itch.io
