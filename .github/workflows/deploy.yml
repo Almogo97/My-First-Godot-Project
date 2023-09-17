@@ -23,11 +23,14 @@ jobs:
       - name: Export
         run: |
           mkdir -v -p build/windows
-          ls build/windows
-          echo "Hello"
           godot -v --export-release --headless "Windows Desktop" build/windows/$EXPORT_NAME.exe
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
           name: windows
           path: build/windows
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          generate_release_notes: true
+          files: build/windows/$EXPORT_NAME.exe
