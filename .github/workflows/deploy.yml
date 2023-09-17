@@ -24,7 +24,7 @@ jobs:
         include:
           - platform: "windows"
             preset: "Windows Desktop"
-            executable: ${{env.EXPORT_NAME}}.exe
+            executable: "${{env.EXPORT_NAME}}.exe"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
