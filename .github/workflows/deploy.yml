@@ -1,8 +1,5 @@
 name: "Deploy"
-on:
-  push:
-    tags:
-      - "v*"
+on: push
 
 env:
   GODOT_VERSION: 4.1.1
@@ -21,7 +18,7 @@ jobs:
           lfs: true
       - name: Setup
         run: |
-          mkdir -v -p ~/.local/share/godot/templates
+          mkdir -v -p ~/.local/share/godot/export_templates
           mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
       - name: Export
         run: |
