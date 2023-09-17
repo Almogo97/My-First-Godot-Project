@@ -1,8 +1,9 @@
 name: "Deploy"
 on:
   push:
-    tags:
-      - "v*"
+      tags:
+        - "v*"
+
 jobs:
   export:
     name: Export
@@ -26,6 +27,10 @@ jobs:
           generateReleaseNotes: true
           tag: ${{ github.ref_name }}
           artifacts: ${{ steps.export.outputs.build_directory }}/Windows/Click.exe
+      - run: |
+          cd ${{ steps.export.outputs.build_directory }}/Web
+          curl -fsSL https://github.com/gzuidhof/coi-serviceworker/raw/master/coi-serviceworker.js > coi-serviceworker.js
+          sed -i 's#\(		<script src="index.js"></script>\)#		<script src="coi-serviceworker.js"></script>\n\1#g' index.html
       - name: Deploy to GitHub Pages 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
