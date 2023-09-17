@@ -14,7 +14,7 @@ env:
 
 jobs:
   build:
-    name: Build
+    name: Build for ${{matrix.platform}}
     runs-on: ubuntu-20.04
     container:
       image: barichello/godot-ci:4.1.1
@@ -69,7 +69,7 @@ jobs:
         run: butler push build/windows.zip ${{vars.ITCHIO_USERNAME}}/${{vars.ITCHIO_GAME}}:windows
 
   deploy-itchio:
-    name: Deploy Itch.io
+    name: Deploy ${{matrix.preset}} to Itch.io
     needs: build
     runs-on: ubuntu-20.04
     container:
@@ -81,7 +81,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v3
         with:
-          name: web
+          name: ${{matrix.platform}}
           path: build
       - name: Deploy to Itch.io
         run: butler push build/${{matrix.platform}}.zip ${{vars.ITCHIO_USERNAME}}/${{vars.ITCHIO_GAME}}:${{matrix.platform}}
