@@ -18,7 +18,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           lfs: true
-      - name: Build
+      - name: Setup
+        run: |
+          mkdir -v -p ~/.local/share/godot/templates
+          mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
+      - name: Export
         run: |
           mkdir -v -p build/windows
           godot -v --export-release --headless "Windows Desktop" ../build/windows/$EXPORT_NAME.exe
